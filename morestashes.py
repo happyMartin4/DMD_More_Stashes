@@ -3,18 +3,26 @@ from tkinter import ttk
 import ttkbootstrap as ttkb
 
 def main():
+    style = ttkb.Style('darkly')
+    root = style.master
     #placeholder values
     numberOfActive = 8
     statsToDisplay = 8
     columnsOfInactive = 10
     rowsOfInactive = 15
-    currentActive = 0
+    lastActive = ttkb.IntVar()
+    currentActive = ttkb.IntVar()
+    lastInactive = ttkb.IntVar()
+    currentInactive = ttkb.IntVar()
+    currentInactive.set(10)
+
+
+
     storageUsedActive = 40
     
     #GUI setup begins:
     #main window setup
-    style = ttkb.Style('darkly')
-    root = style.master
+
     root.title('DMD More Stash')
     root.iconbitmap('Assets/MS.ico')
     root.geometry('800x700')
@@ -66,10 +74,14 @@ def main():
         activeStorageStats[i].pack(expand=True, padx=10, pady=5)
     activeStashFrame.pack(side='bottom', fill='both', expand=False, padx='2', pady='5')
 
-    activeStorageButtons = []
+    activeStashButtons = []
     for i in range(numberOfActive):
-        activeStorageButtons.append(ttkb.Button(activeStashFrame, text=f'Stash {i+1}', bootstyle=styleActive))
-        activeStorageButtons[i].pack(side='top', fill='both', padx=5, pady=3)
+        def buttonAction(x=i):
+            print(x)
+            lastActive.set(currentActive.get())
+            currentActive.set(x)
+        activeStashButtons.append(ttkb.Button(activeStashFrame, text=f'Stash {i+1}', bootstyle=f'{styleActive}, outline', command=buttonAction))
+        activeStashButtons[i].pack(side='top', fill='both', padx=5, pady=3)
 
     #Actions
     actionsFrame.pack(side='bottom', fill='both', expand=True, padx='2', pady='5')
@@ -93,7 +105,13 @@ def main():
     inactiveStashButtons = []
     for row in range(rowsOfInactive):
         for column in range(columnsOfInactive):
-            button = ttkb.Button(inactiveStashFrame, text=str((row*columnsOfInactive)+(column+1)), bootstyle=f'{styleInactive}')
+            currentBox = (row*columnsOfInactive)+column
+            #buttonAction = lambda 
+            def buttonAction(x=currentBox):
+                lastInactive.set(currentInactive.get())
+                currentInactive.set(x)
+
+            button = ttkb.Button(inactiveStashFrame, text=str(currentBox+1), bootstyle=f'{styleInactive}, outline', command=buttonAction)
             button.grid(row=row, column=column, sticky='nsew')
             inactiveStashButtons.append(button)
 
@@ -102,17 +120,24 @@ def main():
     for column in range(columnsOfInactive):
         inactiveStashFrame.columnconfigure(column, weight=1)
 
+
+    
     #GUI implemented
 
     #Functionality begins:
     
-
+    #TEST CODE
+    currentInactive.trace_add("write", lambda *args: activeStorageStats[0].config(text=currentInactive.get()))
+    currentInactive.trace_add("write", lambda *args: inactiveStashButtons[currentInactive.get()].config(bootstyle=f'{styleInactive}'))
+    currentInactive.trace_add("write", lambda *args: inactiveStashButtons[lastInactive.get()].config(bootstyle=f'{styleInactive}, outline'))
+    currentActive.trace_add("write", lambda *args: activeStorageStats[1].config(text=currentActive.get()))
+    currentActive.trace_add("write", lambda *args: activeStashButtons[currentActive.get()].config(bootstyle=f'{styleActive}'))
+    currentActive.trace_add("write", lambda *args: activeStashButtons[lastActive.get()].config(bootstyle=f'{styleActive}, outline'))
+    #activeStorageStats[0].config(text=currentInactive)
 
     root.mainloop()
-
-def activeStashClick(i):
-
-    return
+    print(lastActive.get())
+    print(currentActive.get())
 
 if __name__ == '__main__':
     main()
