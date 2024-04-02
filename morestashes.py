@@ -1,3 +1,4 @@
+from SupportingScripts import filehandle
 import tkinter as tk
 from tkinter import ttk 
 import ttkbootstrap as ttkb
@@ -5,7 +6,7 @@ import ttkbootstrap as ttkb
 def main():
     style = ttkb.Style('darkly')
     root = style.master
-    #placeholder values
+    #value intiliazing
     numberOfActive = 8
     statsToDisplay = 8
     columnsOfInactive = 10
@@ -14,7 +15,6 @@ def main():
     currentActive = ttkb.IntVar()
     lastInactive = ttkb.IntVar()
     currentInactive = ttkb.IntVar()
-    currentInactive.set(10)
 
 
 
@@ -77,7 +77,6 @@ def main():
     activeStashButtons = []
     for i in range(numberOfActive):
         def buttonAction(x=i):
-            print(x)
             lastActive.set(currentActive.get())
             currentActive.set(x)
         activeStashButtons.append(ttkb.Button(activeStashFrame, text=f'Stash {i+1}', bootstyle=f'{styleActive}, outline', command=buttonAction))
