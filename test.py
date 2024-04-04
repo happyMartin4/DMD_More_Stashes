@@ -1,5 +1,14 @@
-from tkinter import *
-root = Tk()
-frame1 = Frame(root, highlightbackground="blue", highlightthickness=1,width=600, height=100, bd= 0)
-frame1.pack()
-root.mainloop()
+def main():
+    listOfNum = [1,2,3,1,1,5,3]
+    metaDict = {}
+    for num in listOfNum:
+        if num in metaDict:
+            metaDict[num] += 1
+        else:
+            metaDict[num] = 1
+    
+    print(metaDict)
+
+
+if __name__ == '__main__':
+    main()
