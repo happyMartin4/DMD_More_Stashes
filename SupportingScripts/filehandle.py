@@ -5,6 +5,8 @@ from pathlib import Path
 
 
 class FileHandler:
+    EMPTYSTASH = r"{\\\"Width\\\":5,\\\"Height\\\":8,\\\"Items\\\":[{\\\"Code\\\":\\\"\\\",\\\"Type\\\":0,\\\"Rarity\\\":0,\\\"TierIndex\\\":0,\\\"IsUnique\\\":false,\\\"SubtypeCode\\\":\\\"\\\",\\\"IconVariant\\\":\\\"\\\",\\\"DropVariant\\\":\\\"\\\",\\\"Affixes\\\":[],\\\"WasOwnedByPlayer\\\":false,\\\"BoundToCharacterCode\\\":\\\"\\\"},{\\\"Code\\\":\\\"\\\",\\\"Type\\\":0,\\\"Rarity\\\":0,\\\"TierIndex\\\":0,\\\"IsUnique\\\":false,\\\"SubtypeCode\\\":\\\"\\\",\\\"IconVariant\\\":\\\"\\\",\\\"DropVariant\\\":\\\"\\\",\\\"Affixes\\\":[],\\\"WasOwnedByPlayer\\\":false,\\\"BoundToCharacterCode\\\":\\\"\\\"},{\\\"Code\\\":\\\"\\\",\\\"Type\\\":0,\\\"Rarity\\\":0,\\\"TierIndex\\\":0,\\\"IsUnique\\\":false,\\\"SubtypeCode\\\":\\\"\\\",\\\"IconVariant\\\":\\\"\\\",\\\"DropVariant\\\":\\\"\\\",\\\"Affixes\\\":[],\\\"WasOwnedByPlayer\\\":false,\\\"BoundToCharacterCode\\\":\\\"\\\"},{\\\"Code\\\":\\\"\\\",\\\"Type\\\":0,\\\"Rarity\\\":0,\\\"TierIndex\\\":0,\\\"IsUnique\\\":false,\\\"SubtypeCode\\\":\\\"\\\",\\\"IconVariant\\\":\\\"\\\",\\\"DropVariant\\\":\\\"\\\",\\\"Affixes\\\":[],\\\"WasOwnedByPlayer\\\":false,\\\"BoundToCharacterCode\\\":\\\"\\\"},{\\\"Code\\\":\\\"\\\",\\\"Type\\\":0,\\\"Rarity\\\":0,\\\"TierIndex\\\":0,\\\"IsUnique\\\":false,\\\"SubtypeCode\\\":\\\"\\\",\\\"IconVariant\\\":\\\"\\\",\\\"DropVariant\\\":\\\"\\\",\\\"Affixes\\\":[],\\\"WasOwnedByPlayer\\\":false,\\\"BoundToCharacterCode\\\":\\\"\\\"},{\\\"Code\\\":\\\"\\\",\\\"Type\\\":0,\\\"Rarity\\\":0,\\\"TierIndex\\\":0,\\\"IsUnique\\\":false,\\\"SubtypeCode\\\":\\\"\\\",\\\"IconVariant\\\":\\\"\\\",\\\"DropVariant\\\":\\\"\\\",\\\"Affixes\\\":[],\\\"WasOwnedByPlayer\\\":false,\\\"BoundToCharacterCode\\\":\\\"\\\"},{\\\"Code\\\":\\\"\\\",\\\"Type\\\":0,\\\"Rarity\\\":0,\\\"TierIndex\\\":0,\\\"IsUnique\\\":false,\\\"SubtypeCode\\\":\\\"\\\",\\\"IconVariant\\\":\\\"\\\",\\\"DropVariant\\\":\\\"\\\",\\\"Affixes\\\":[],\\\"WasOwnedByPlayer\\\":false,\\\"BoundToCharacterCode\\\":\\\"\\\"},{\\\"Code\\\":\\\"\\\",\\\"Type\\\":0,\\\"Rarity\\\":0,\\\"TierIndex\\\":0,\\\"IsUnique\\\":false,\\\"SubtypeCode\\\":\\\"\\\",\\\"IconVariant\\\":\\\"\\\",\\\"DropVariant\\\":\\\"\\\",\\\"Affixes\\\":[],\\\"WasOwnedByPlayer\\\":false,\\\"BoundToCharacterCode\\\":\\\"\\\"},{\\\"Code\\\":\\\"\\\",\\\"Type\\\":0,\\\"Rarity\\\":0,\\\"TierIndex\\\":0,\\\"IsUnique\\\":false,\\\"SubtypeCode\\\":\\\"\\\",\\\"IconVariant\\\":\\\"\\\",\\\"DropVariant\\\":\\\"\\\",\\\"Affixes\\\":[],\\\"WasOwnedByPlayer\\\":false,\\\"BoundToCharacterCode\\\":\\\"\\\"},{\\\"Code\\\":\\\"\\\",\\\"Type\\\":0,\\\"Rarity\\\":0,\\\"TierIndex\\\":0,\\\"IsUnique\\\":false,\\\"SubtypeCode\\\":\\\"\\\",\\\"IconVariant\\\":\\\"\\\",\\\"DropVariant\\\":\\\"\\\",\\\"Affixes\\\":[],\\\"WasOwnedByPlayer\\\":false,\\\"BoundToCharacterCode\\\":\\\"\\\"},{\\\"Code\\\":\\\"\\\",\\\"Type\\\":0,\\\"Rarity\\\":0,\\\"TierIndex\\\":0,\\\"IsUnique\\\":false,\\\"SubtypeCode\\\":\\\"\\\",\\\"IconVariant\\\":\\\"\\\",\\\"DropVariant\\\":\\\"\\\",\\\"Affixes\\\":[],\\\"WasOwnedByPlayer\\\":false,\\\"BoundToCharacterCode\\\":\\\"\\\"},{\\\"Code\\\":\\\"\\\",\\\"Type\\\":0,\\\"Rarity\\\":0,\\\"TierIndex\\\":0,\\\"IsUnique\\\":false,\\\"SubtypeCode\\\":\\\"\\\",\\\"IconVariant\\\":\\\"\\\",\\\"DropVariant\\\":\\\"\\\",\\\"Affixes\\\":[],\\\"WasOwnedByPlayer\\\":false,\\\"BoundToCharacterCode\\\":\\\"\\\"},{\\\"Code\\\":\\\"\\\",\\\"Type\\\":0,\\\"Rarity\\\":0,\\\"TierIndex\\\":0,\\\"IsUnique\\\":false,\\\"SubtypeCode\\\":\\\"\\\",\\\"IconVariant\\\":\\\"\\\",\\\"DropVariant\\\":\\\"\\\",\\\"Affixes\\\":[],\\\"WasOwnedByPlayer\\\":false,\\\"BoundToCharacterCode\\\":\\\"\\\"},{\\\"Code\\\":\\\"\\\",\\\"Type\\\":0,\\\"Rarity\\\":0,\\\"TierIndex\\\":0,\\\"IsUnique\\\":false,\\\"SubtypeCode\\\":\\\"\\\",\\\"IconVariant\\\":\\\"\\\",\\\"DropVariant\\\":\\\"\\\",\\\"Affixes\\\":[],\\\"WasOwnedByPlayer\\\":false,\\\"BoundToCharacterCode\\\":\\\"\\\"},{\\\"Code\\\":\\\"\\\",\\\"Type\\\":0,\\\"Rarity\\\":0,\\\"TierIndex\\\":0,\\\"IsUnique\\\":false,\\\"SubtypeCode\\\":\\\"\\\",\\\"IconVariant\\\":\\\"\\\",\\\"DropVariant\\\":\\\"\\\",\\\"Affixes\\\":[],\\\"WasOwnedByPlayer\\\":false,\\\"BoundToCharacterCode\\\":\\\"\\\"},{\\\"Code\\\":\\\"\\\",\\\"Type\\\":0,\\\"Rarity\\\":0,\\\"TierIndex\\\":0,\\\"IsUnique\\\":false,\\\"SubtypeCode\\\":\\\"\\\",\\\"IconVariant\\\":\\\"\\\",\\\"DropVariant\\\":\\\"\\\",\\\"Affixes\\\":[],\\\"WasOwnedByPlayer\\\":false,\\\"BoundToCharacterCode\\\":\\\"\\\"},{\\\"Code\\\":\\\"\\\",\\\"Type\\\":0,\\\"Rarity\\\":0,\\\"TierIndex\\\":0,\\\"IsUnique\\\":false,\\\"SubtypeCode\\\":\\\"\\\",\\\"IconVariant\\\":\\\"\\\",\\\"DropVariant\\\":\\\"\\\",\\\"Affixes\\\":[],\\\"WasOwnedByPlayer\\\":false,\\\"BoundToCharacterCode\\\":\\\"\\\"},{\\\"Code\\\":\\\"\\\",\\\"Type\\\":0,\\\"Rarity\\\":0,\\\"TierIndex\\\":0,\\\"IsUnique\\\":false,\\\"SubtypeCode\\\":\\\"\\\",\\\"IconVariant\\\":\\\"\\\",\\\"DropVariant\\\":\\\"\\\",\\\"Affixes\\\":[],\\\"WasOwnedByPlayer\\\":false,\\\"BoundToCharacterCode\\\":\\\"\\\"},{\\\"Code\\\":\\\"\\\",\\\"Type\\\":0,\\\"Rarity\\\":0,\\\"TierIndex\\\":0,\\\"IsUnique\\\":false,\\\"SubtypeCode\\\":\\\"\\\",\\\"IconVariant\\\":\\\"\\\",\\\"DropVariant\\\":\\\"\\\",\\\"Affixes\\\":[],\\\"WasOwnedByPlayer\\\":false,\\\"BoundToCharacterCode\\\":\\\"\\\"},{\\\"Code\\\":\\\"\\\",\\\"Type\\\":0,\\\"Rarity\\\":0,\\\"TierIndex\\\":0,\\\"IsUnique\\\":false,\\\"SubtypeCode\\\":\\\"\\\",\\\"IconVariant\\\":\\\"\\\",\\\"DropVariant\\\":\\\"\\\",\\\"Affixes\\\":[],\\\"WasOwnedByPlayer\\\":false,\\\"BoundToCharacterCode\\\":\\\"\\\"},{\\\"Code\\\":\\\"\\\",\\\"Type\\\":0,\\\"Rarity\\\":0,\\\"TierIndex\\\":0,\\\"IsUnique\\\":false,\\\"SubtypeCode\\\":\\\"\\\",\\\"IconVariant\\\":\\\"\\\",\\\"DropVariant\\\":\\\"\\\",\\\"Affixes\\\":[],\\\"WasOwnedByPlayer\\\":false,\\\"BoundToCharacterCode\\\":\\\"\\\"},{\\\"Code\\\":\\\"\\\",\\\"Type\\\":0,\\\"Rarity\\\":0,\\\"TierIndex\\\":0,\\\"IsUnique\\\":false,\\\"SubtypeCode\\\":\\\"\\\",\\\"IconVariant\\\":\\\"\\\",\\\"DropVariant\\\":\\\"\\\",\\\"Affixes\\\":[],\\\"WasOwnedByPlayer\\\":false,\\\"BoundToCharacterCode\\\":\\\"\\\"},{\\\"Code\\\":\\\"\\\",\\\"Type\\\":0,\\\"Rarity\\\":0,\\\"TierIndex\\\":0,\\\"IsUnique\\\":false,\\\"SubtypeCode\\\":\\\"\\\",\\\"IconVariant\\\":\\\"\\\",\\\"DropVariant\\\":\\\"\\\",\\\"Affixes\\\":[],\\\"WasOwnedByPlayer\\\":false,\\\"BoundToCharacterCode\\\":\\\"\\\"},{\\\"Code\\\":\\\"\\\",\\\"Type\\\":0,\\\"Rarity\\\":0,\\\"TierIndex\\\":0,\\\"IsUnique\\\":false,\\\"SubtypeCode\\\":\\\"\\\",\\\"IconVariant\\\":\\\"\\\",\\\"DropVariant\\\":\\\"\\\",\\\"Affixes\\\":[],\\\"WasOwnedByPlayer\\\":false,\\\"BoundToCharacterCode\\\":\\\"\\\"},{\\\"Code\\\":\\\"\\\",\\\"Type\\\":0,\\\"Rarity\\\":0,\\\"TierIndex\\\":0,\\\"IsUnique\\\":false,\\\"SubtypeCode\\\":\\\"\\\",\\\"IconVariant\\\":\\\"\\\",\\\"DropVariant\\\":\\\"\\\",\\\"Affixes\\\":[],\\\"WasOwnedByPlayer\\\":false,\\\"BoundToCharacterCode\\\":\\\"\\\"},{\\\"Code\\\":\\\"\\\",\\\"Type\\\":0,\\\"Rarity\\\":0,\\\"TierIndex\\\":0,\\\"IsUnique\\\":false,\\\"SubtypeCode\\\":\\\"\\\",\\\"IconVariant\\\":\\\"\\\",\\\"DropVariant\\\":\\\"\\\",\\\"Affixes\\\":[],\\\"WasOwnedByPlayer\\\":false,\\\"BoundToCharacterCode\\\":\\\"\\\"},{\\\"Code\\\":\\\"\\\",\\\"Type\\\":0,\\\"Rarity\\\":0,\\\"TierIndex\\\":0,\\\"IsUnique\\\":false,\\\"SubtypeCode\\\":\\\"\\\",\\\"IconVariant\\\":\\\"\\\",\\\"DropVariant\\\":\\\"\\\",\\\"Affixes\\\":[],\\\"WasOwnedByPlayer\\\":false,\\\"BoundToCharacterCode\\\":\\\"\\\"},{\\\"Code\\\":\\\"\\\",\\\"Type\\\":0,\\\"Rarity\\\":0,\\\"TierIndex\\\":0,\\\"IsUnique\\\":false,\\\"SubtypeCode\\\":\\\"\\\",\\\"IconVariant\\\":\\\"\\\",\\\"DropVariant\\\":\\\"\\\",\\\"Affixes\\\":[],\\\"WasOwnedByPlayer\\\":false,\\\"BoundToCharacterCode\\\":\\\"\\\"},{\\\"Code\\\":\\\"\\\",\\\"Type\\\":0,\\\"Rarity\\\":0,\\\"TierIndex\\\":0,\\\"IsUnique\\\":false,\\\"SubtypeCode\\\":\\\"\\\",\\\"IconVariant\\\":\\\"\\\",\\\"DropVariant\\\":\\\"\\\",\\\"Affixes\\\":[],\\\"WasOwnedByPlayer\\\":false,\\\"BoundToCharacterCode\\\":\\\"\\\"},{\\\"Code\\\":\\\"\\\",\\\"Type\\\":0,\\\"Rarity\\\":0,\\\"TierIndex\\\":0,\\\"IsUnique\\\":false,\\\"SubtypeCode\\\":\\\"\\\",\\\"IconVariant\\\":\\\"\\\",\\\"DropVariant\\\":\\\"\\\",\\\"Affixes\\\":[],\\\"WasOwnedByPlayer\\\":false,\\\"BoundToCharacterCode\\\":\\\"\\\"},{\\\"Code\\\":\\\"\\\",\\\"Type\\\":0,\\\"Rarity\\\":0,\\\"TierIndex\\\":0,\\\"IsUnique\\\":false,\\\"SubtypeCode\\\":\\\"\\\",\\\"IconVariant\\\":\\\"\\\",\\\"DropVariant\\\":\\\"\\\",\\\"Affixes\\\":[],\\\"WasOwnedByPlayer\\\":false,\\\"BoundToCharacterCode\\\":\\\"\\\"},{\\\"Code\\\":\\\"\\\",\\\"Type\\\":0,\\\"Rarity\\\":0,\\\"TierIndex\\\":0,\\\"IsUnique\\\":false,\\\"SubtypeCode\\\":\\\"\\\",\\\"IconVariant\\\":\\\"\\\",\\\"DropVariant\\\":\\\"\\\",\\\"Affixes\\\":[],\\\"WasOwnedByPlayer\\\":false,\\\"BoundToCharacterCode\\\":\\\"\\\"},{\\\"Code\\\":\\\"\\\",\\\"Type\\\":0,\\\"Rarity\\\":0,\\\"TierIndex\\\":0,\\\"IsUnique\\\":false,\\\"SubtypeCode\\\":\\\"\\\",\\\"IconVariant\\\":\\\"\\\",\\\"DropVariant\\\":\\\"\\\",\\\"Affixes\\\":[],\\\"WasOwnedByPlayer\\\":false,\\\"BoundToCharacterCode\\\":\\\"\\\"},{\\\"Code\\\":\\\"\\\",\\\"Type\\\":0,\\\"Rarity\\\":0,\\\"TierIndex\\\":0,\\\"IsUnique\\\":false,\\\"SubtypeCode\\\":\\\"\\\",\\\"IconVariant\\\":\\\"\\\",\\\"DropVariant\\\":\\\"\\\",\\\"Affixes\\\":[],\\\"WasOwnedByPlayer\\\":false,\\\"BoundToCharacterCode\\\":\\\"\\\"},{\\\"Code\\\":\\\"\\\",\\\"Type\\\":0,\\\"Rarity\\\":0,\\\"TierIndex\\\":0,\\\"IsUnique\\\":false,\\\"SubtypeCode\\\":\\\"\\\",\\\"IconVariant\\\":\\\"\\\",\\\"DropVariant\\\":\\\"\\\",\\\"Affixes\\\":[],\\\"WasOwnedByPlayer\\\":false,\\\"BoundToCharacterCode\\\":\\\"\\\"},{\\\"Code\\\":\\\"\\\",\\\"Type\\\":0,\\\"Rarity\\\":0,\\\"TierIndex\\\":0,\\\"IsUnique\\\":false,\\\"SubtypeCode\\\":\\\"\\\",\\\"IconVariant\\\":\\\"\\\",\\\"DropVariant\\\":\\\"\\\",\\\"Affixes\\\":[],\\\"WasOwnedByPlayer\\\":false,\\\"BoundToCharacterCode\\\":\\\"\\\"},{\\\"Code\\\":\\\"\\\",\\\"Type\\\":0,\\\"Rarity\\\":0,\\\"TierIndex\\\":0,\\\"IsUnique\\\":false,\\\"SubtypeCode\\\":\\\"\\\",\\\"IconVariant\\\":\\\"\\\",\\\"DropVariant\\\":\\\"\\\",\\\"Affixes\\\":[],\\\"WasOwnedByPlayer\\\":false,\\\"BoundToCharacterCode\\\":\\\"\\\"},{\\\"Code\\\":\\\"\\\",\\\"Type\\\":0,\\\"Rarity\\\":0,\\\"TierIndex\\\":0,\\\"IsUnique\\\":false,\\\"SubtypeCode\\\":\\\"\\\",\\\"IconVariant\\\":\\\"\\\",\\\"DropVariant\\\":\\\"\\\",\\\"Affixes\\\":[],\\\"WasOwnedByPlayer\\\":false,\\\"BoundToCharacterCode\\\":\\\"\\\"},{\\\"Code\\\":\\\"\\\",\\\"Type\\\":0,\\\"Rarity\\\":0,\\\"TierIndex\\\":0,\\\"IsUnique\\\":false,\\\"SubtypeCode\\\":\\\"\\\",\\\"IconVariant\\\":\\\"\\\",\\\"DropVariant\\\":\\\"\\\",\\\"Affixes\\\":[],\\\"WasOwnedByPlayer\\\":false,\\\"BoundToCharacterCode\\\":\\\"\\\"},{\\\"Code\\\":\\\"\\\",\\\"Type\\\":0,\\\"Rarity\\\":0,\\\"TierIndex\\\":0,\\\"IsUnique\\\":false,\\\"SubtypeCode\\\":\\\"\\\",\\\"IconVariant\\\":\\\"\\\",\\\"DropVariant\\\":\\\"\\\",\\\"Affixes\\\":[],\\\"WasOwnedByPlayer\\\":false,\\\"BoundToCharacterCode\\\":\\\"\\\"}]}"
+    NUM_OF_ACTIVE_STASHES = 3
     def __str__(self):
         return f'reading save from: {self.inputPath}\nsaving file to: {self.outputPath}\ncurrently looking at active stash \
         {self.activeStash} + 1\ncurrently looking at inactive stash: {self.inactiveStash} + 1'
@@ -43,10 +45,11 @@ class FileHandler:
     def rawInactive(self, newRawInact):
         output = ''
         try:
-            with open(f'{self.outputPath}\\Stashes\\stash{newRawInact}', 'r', encoding='utf-8') as file:
+            with open(f'{self.outputPath}\\Stashes\\stash_{newRawInact}', 'r', encoding='utf-8') as file:
                 output = file.read()
         except Exception as e:
-            print(f'Error reading from {newRawInact}: {str(e)}')
+            print(f'Error reading from {newRawInact} while setting inactiveStash: {str(e)}')
+            output = self.EMPTYSTASH
         self._rawInactive = output
     
     def getActiveListItem(self, index):
@@ -126,14 +129,19 @@ class FileHandler:
         """Delete External Stash at self.inactive"""   
         return
 
-    def backUp(self):
-        backupLocation = os.path.join(self.outputPath, "Backups")
-        os.makedirs(backupLocation, exist_ok=True)
+    def backup(self):
+        backupDirectory = os.path.join(self.outputPath, "Backups")
+        os.makedirs(backupDirectory, exist_ok=True)
         fileIndex = 1
-        pathTo = os.path.join(stashDirectory, f'stash_{fileIndex}')
+        saveHolder = ''
+        pathTo = os.path.join(backupDirectory, f'Backup_{fileIndex}.sav')
         while os.path.exists(pathTo):
             fileIndex += 1
-            pathTo = os.path.join(stashDirectoy, f'stash_{fileIndex}')
+            pathTo = os.path.join(backupDirectory, f'Backup_{fileIndex}.sav')
+        with open(self.inputPath, 'rb') as file:
+            saveHolder = file.read()
+        with open(pathTo, 'wb') as file:
+            file.write(saveHolder)
         
                     
     def save(self, savePath=None):
@@ -145,7 +153,8 @@ class FileHandler:
         stashMeta = {}
         for i, stash in enumerate(currentStashes):
             #Compare to the list of what we have replaced with so we can skip reccurences.
-            if stash in stashMeta:
+            print(f"Replacement {i}: \n"+'---'*60 + f'\n{self.activeStashList[i]}'+'---'*60)
+            if self.activeStashList[i] in stashMeta:
                 stashMeta[str(self.activeStashList[i])] += 1
             else:
                 stashMeta[str(self.activeStashList[i])] = 1
@@ -203,6 +212,7 @@ class FileHandler:
     , outputPath=Path.home() / 'AppData\\LocalLow\\Realm Archive\\Death Must Die\\Saves\\', activeStash=0, inactiveStash=0):
         self.inputPath = inputPath
         self.outputPath = outputPath
+        self.backup()
         try:
             rawSave = self.readAndDecompress()
             self.setActiveList(self.parseStashes(rawSave))
@@ -218,13 +228,19 @@ class FileHandler:
 def main():
     print('all good.')
     saveManager = FileHandler()
-    print(saveManager.parseStashes)
-
+    #print(saveManager.parseStashes)
+    """
     for i in range(3):
-        saveManager.inactiveStash=i
-        saveManager.activeStashList[i] = saveManager.rawInactive
+        saveManager.activeStash = i
+        saveManager.export()
+
+    i = 1
+    #for i in range(3):
+    saveManager.inactiveStash=i
+    saveManager.activeStashList[i] = saveManager.rawInactive
     saveManager.save()
-    print('saved')
+    """
+    print('done')
 
 if __name__ == "__main__":
     main()
