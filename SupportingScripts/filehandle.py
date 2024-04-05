@@ -86,11 +86,10 @@ class FileHandler:
             return f"Error writing to '{self.outputPath}': {str(e)}"
     
     def swap(self):
-        storage = self.activeStash
-        self.activeStash = self.inactiveStash
-        self.inactiveStash = storage             
-        #self.exportOverwrite()
-        #self.save()
+        storage = self.getActiveListItem(self.activeStash)
+        self.setActiveListItem(self.activeStash, self.rawInactive) 
+        self.rawInactive = storage             
+
     
 
     """
@@ -113,10 +112,10 @@ class FileHandler:
             return 1
         return (fileIndex-1)
     
-    def exportOverwrite(self, fileIndex):
+    def exportOverwrite(self):
         stashDirectory = os.path.join(self.outputPath, "Stashes")
         os.makedirs(stashDirectory, exist_ok=True)
-        pathTo = os.path.join(stashDirectory, f'stash_{fileIndex}')
+        pathTo = os.path.join(stashDirectory, f'Stash_{(self.currentInactive+1)}')
         try:
             with open(pathTo, 'w', encoding='utf-8') as file:
                 file.write(self.rawInactive)
@@ -147,7 +146,7 @@ class FileHandler:
     def save(self, savePath=None):
         if savePath==None:
             savePath = self.inputPath
-        #self.backUp()
+        self.backup()
         rawSave = self.readAndDecompress()
         currentStashes = self.parseStashes(rawSave) #returns an array
         stashMeta = {}
