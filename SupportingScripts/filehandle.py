@@ -47,7 +47,7 @@ class FileHandler:
                 output = file.read()
         except Exception as e:
             print(f'Error reading from {newRawInact}: {str(e)}')
-        self._rawInactive = newRawInact
+        self._rawInactive = output
     
     def getActiveListItem(self, index):
         return self.activeStashList[index]
@@ -146,10 +146,10 @@ class FileHandler:
         for i, stash in enumerate(currentStashes):
             #Compare to the list of what we have replaced with so we can skip reccurences.
             if stash in stashMeta:
-                stashMeta[self.activeStashList[i]] += 1
+                stashMeta[str(self.activeStashList[i])] += 1
             else:
-                stashMeta[self.activeStashList[i]] = 1
-            #rawSave = self.replaceNth(stashMeta[stash], rawSave, stash, self.activeStashList[i])
+                stashMeta[str(self.activeStashList[i])] = 1
+            rawSave = self.replaceNth(stashMeta[self.activeStashList[i]], rawSave, stash, self.activeStashList[i])
             
         decompress.recompress(rawSave, savePath)
 
@@ -218,17 +218,12 @@ class FileHandler:
 def main():
     print('all good.')
     saveManager = FileHandler()
-    #print(saveManager)
-    saveManager.save(saveManager.outputPath / 'testOutput1.sav')
-    saveManager.inputPath = saveManager.outputPath / 'testOutput1.sav'
-    text = saveManager.readAndDecompress()
-    with open(saveManager.outputPath / 'output_after_saving.txt', 'w', encoding='utf-8') as file:
-        file.write(text)
-    #print(str(saveManager)+'\n'+'-'*160)
-    #for i in range(3):
-        #saveManager.inactiveStash=i
-        #saveManager.save()
-    #saveManager.save()
+    print(saveManager.parseStashes)
+
+    for i in range(3):
+        saveManager.inactiveStash=i
+        saveManager.activeStashList[i] = saveManager.rawInactive
+    saveManager.save()
     print('saved')
 
 if __name__ == "__main__":
