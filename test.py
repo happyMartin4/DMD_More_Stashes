@@ -1,13 +1,8 @@
 def main():
-    listOfNum = [1,2,3,1,1,5,3]
-    metaDict = {}
-    for num in listOfNum:
-        if num in metaDict:
-            metaDict[num] += 1
-        else:
-            metaDict[num] = 1
-    
-    print(metaDict)
+    string = 'this is a string talking about bob, alice, bob, and eve'
+    parts = string.split('bob', 1)
+    string = "tim".join(parts)
+    print(string)
 
 
 if __name__ == '__main__':
