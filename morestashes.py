@@ -2,15 +2,18 @@
 import tkinter as tk
 from tkinter import ttk 
 import ttkbootstrap as ttkb
+from SupportingScripts import filehandle
+import os
 
 def main():
     style = ttkb.Style('darkly')
     root = style.master
     #value intiliazing
+    saveManager = filehandle.FileHandler()
     numberOfActive = 8
     statsToDisplay = 8
     columnsOfInactive = 10
-    rowsOfInactive = 15
+    rowsOfInactive = 50
     lastActive = ttkb.IntVar()
     currentActive = ttkb.IntVar()
     lastInactive = ttkb.IntVar()
@@ -25,8 +28,8 @@ def main():
 
     root.title('DMD More Stash')
     root.iconbitmap('Assets/MS.ico')
-    root.geometry('800x700')
-    root.minsize(800, 700)
+    root.state('zoomed')
+    root.minsize(1050, 600)
     styleHeader = 'primary'
     styleActiveOuter = 'primary'
     styleActionsOuter = 'primary'
@@ -74,19 +77,41 @@ def main():
         activeStorageStats[i].pack(expand=True, padx=10, pady=5)
     activeStashFrame.pack(side='bottom', fill='both', expand=False, padx='2', pady='5')
 
+    activeStashCanvas = ttkb.Canvas(activeStashFrame)
+    activeStashScrollBar = ttkb.Scrollbar(activeStashFrame, orient='vertical', command=activeStashCanvas.yview)
+    activeStashCanvas.configure(yscrollcommand=activeStashScrollBar.set)
+    activeStashScrollBar.pack(side='right', padx=2, pady=5, fill='y')
+    activeStashCanvas.pack(fill='both', expand=True)
+    ASBFrame = ttkb.Frame(activeStashCanvas)
+    ASBFrame.pack(fill='both', expand=True)
+    activeStashCanvas.create_window((0,0), window=ASBFrame, anchor='nw', tags='ASBFrame')
+
+    def ASBFconfig(event):
+        activeStashCanvas.configure(scrollregion=activeStashCanvas.bbox('all'))
+        width = event.width
+        activeStashCanvas.itemconfig('ASBFrame', width=width)
+        ASBFrame.config(width=width)
+
+    activeStashCanvas.bind('<Configure>', ASBFconfig)
+
+    def ASBFmousewheel(event):
+        activeStashCanvas.yview_scroll(int(-1*(event.delta/120)), 'units')
+    ASBFrame.bind("<Enter>", lambda event: ASBFrame.bind_all('<MouseWheel>', lambda e: ASBFmousewheel(e)))
+    ASBFrame.bind("<Leave>", lambda event: ASBFrame.unbind_all('<MouseWheel>'))
+
+
     activeStashButtons = []
     for i in range(numberOfActive):
         def buttonAction(x=i):
             lastActive.set(currentActive.get())
             currentActive.set(x)
-        activeStashButtons.append(ttkb.Button(activeStashFrame, text=f'Stash {i+1}', bootstyle=f'{styleActive}, outline', command=buttonAction))
-        activeStashButtons[i].pack(side='top', fill='both', padx=5, pady=3)
-
+        activeStashButtons.append(ttkb.Button(ASBFrame, text=f'Stash {i+1}', bootstyle=f'{styleActive}, outline', command=buttonAction))
+        activeStashButtons[i].pack(side='top', fill='both', expand=True, padx=5, pady=3)
     #Actions
     actionsFrame.pack(side='bottom', fill='both', expand=True, padx='2', pady='5')
-    actionButtonExport = ttkb.Button(actionsFrame, text='<- Export', bootstyle=styleActions)
-    actionButtonSwap = ttkb.Button(actionsFrame, text='<- Swap ->', bootstyle=styleActions)
-    actionButtonDelete = ttkb.Button(actionsFrame, text='Delete ->', bootstyle='warning')
+    actionButtonExport = ttkb.Button(actionsFrame, text='<- Export', bootstyle=styleActions, command=saveManager.export)
+    actionButtonSwap = ttkb.Button(actionsFrame, text='<- Swap ->', bootstyle=styleActions, command=saveManager.swap)
+    actionButtonDelete = ttkb.Button(actionsFrame, text='Delete ->', bootstyle='warning', command=saveManager.delete)
     actionButtons=[actionButtonExport, actionButtonSwap, actionButtonDelete]
     for button in actionButtons:
         button.pack(side='top', fill='both', expand=True, padx=5, pady=5)
@@ -101,6 +126,38 @@ def main():
         inactiveStorageStats[i].pack(expand=True, padx=10, pady=5)
     inactiveStashFrame.pack(side='bottom', fill='both', expand=False, padx='2', pady='5')
 
+    inactiveStashCanvas = ttkb.Canvas(inactiveStashFrame)
+    inactiveStashScrollBar = ttkb.Scrollbar(inactiveStashFrame, orient='vertical', command=inactiveStashCanvas.yview)
+    inactiveStashCanvas.configure(yscrollcommand=inactiveStashScrollBar.set)
+    inactiveStashScrollBar.pack(side='right', fill='y',padx=2, pady=5)
+    inactiveStashCanvas.pack(fill='both', expand=True)
+    ISBFrame = ttkb.Frame(inactiveStashCanvas)
+    ISBFrame.pack(fill='both', expand=True)
+    inactiveStashCanvas.create_window((0,0), window=ISBFrame, anchor='nw', tags='ISBFrame')
+
+    def ISBFconfig(event):
+        inactiveStashCanvas.configure(scrollregion=inactiveStashCanvas.bbox('all'))
+        width = event.width
+        inactiveStashCanvas.itemconfig('ISBFrame', width=width)
+        ISBFrame.config(width=width)
+    inactiveStashCanvas.bind('<Configure>', ISBFconfig)
+
+    def ISBFmousewheel(event):
+        inactiveStashCanvas.yview_scroll(int(-1*(event.delta/120)), 'units')
+
+    ISBFrame.bind('<Enter>', lambda event: ISBFrame.bind_all('<MouseWheel>', lambda e: ISBFmousewheel(e)))
+    ISBFrame.bind('<Leave>', lambda event: ISBFrame.unbind_all('<MouseWheel>'))
+    inactiveStashCanvas.bind('<MouseWheel>', ISBFmousewheel)
+
+    def inactiveButtonStyling(currentPosition, isTarget=False):
+        if isTarget:
+            return f'{styleInactive}'
+        try:
+            with open(os.path.join(saveManager.outputPath, rf'Stashes\Stash_{currentPosition+1}'), 'r', encoding='utf-8') as file:
+                return f'{styleInactive}, outline'
+        except:
+            return f'{styleInactive}, link'
+
     inactiveStashButtons = []
     for row in range(rowsOfInactive):
         for column in range(columnsOfInactive):
@@ -109,15 +166,17 @@ def main():
             def buttonAction(x=currentBox):
                 lastInactive.set(currentInactive.get())
                 currentInactive.set(x)
-
-            button = ttkb.Button(inactiveStashFrame, text=str(currentBox+1), bootstyle=f'{styleInactive}, outline', command=buttonAction)
+            isActive = False
+            if currentInactive.get() == currentBox:
+                isActive = True
+            button = ttkb.Button(ISBFrame, text=str(currentBox+1), bootstyle=inactiveButtonStyling(currentBox, isTarget=isActive), command=buttonAction)
             button.grid(row=row, column=column, sticky='nsew')
             inactiveStashButtons.append(button)
 
     for row in range(rowsOfInactive):
-        inactiveStashFrame.rowconfigure(row, weight=1)
+        ISBFrame.rowconfigure(row, weight=1)
     for column in range(columnsOfInactive):
-        inactiveStashFrame.columnconfigure(column, weight=1)
+        ISBFrame.columnconfigure(column, weight=1)
 
 
     
@@ -126,12 +185,20 @@ def main():
     #Functionality begins:
     
     #TEST CODE
-    currentInactive.trace_add("write", lambda *args: activeStorageStats[0].config(text=currentInactive.get()))
-    currentInactive.trace_add("write", lambda *args: inactiveStashButtons[currentInactive.get()].config(bootstyle=f'{styleInactive}'))
-    currentInactive.trace_add("write", lambda *args: inactiveStashButtons[lastInactive.get()].config(bootstyle=f'{styleInactive}, outline'))
-    currentActive.trace_add("write", lambda *args: activeStorageStats[1].config(text=currentActive.get()))
-    currentActive.trace_add("write", lambda *args: activeStashButtons[currentActive.get()].config(bootstyle=f'{styleActive}'))
-    currentActive.trace_add("write", lambda *args: activeStashButtons[lastActive.get()].config(bootstyle=f'{styleActive}, outline'))
+
+    def updateCurrentActive(value):
+        saveManager.activeStash = value
+
+    def updateCurrentInactive(value):
+        saveManager.inactiveStash = value
+    
+
+    currentInactive.trace_add("write", lambda *args: updateCurrentInactive(currentInactive.get()))
+    currentInactive.trace_add("write", lambda *args: inactiveStashButtons[currentInactive.get()].config(bootstyle=inactiveButtonStyling(currentInactive.get(), isTarget=True)))
+    currentInactive.trace_add("write", lambda *args: inactiveStashButtons[lastInactive.get()].config(bootstyle=inactiveButtonStyling(lastInactive.get())))
+    currentActive.trace_add("write", lambda *args: updateCurrentActive(currentActive.get()))
+    currentActive.trace_add("write", lambda *args: activeStashButtons[currentActive.get()].config(bootstyle=rf'{styleActive}'))
+    currentActive.trace_add("write", lambda *args: activeStashButtons[lastActive.get()].config(bootstyle=rf'{styleActive}, outline'))
     #activeStorageStats[0].config(text=currentInactive)
 
     root.mainloop()

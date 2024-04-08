@@ -1,4 +1,4 @@
-import decompress
+from . import decompress
 import os
 from pathlib import Path
 
@@ -178,7 +178,7 @@ class FileHandler:
             self.save()
         else:
             print("Stash being exported is empty. Deleting instead of writing to it.")
-            self.delete(pathTo)
+            self.delete()
                     
     def delete(self):
         """Delete External Stash at self.inactive"""
@@ -273,16 +273,8 @@ class FileHandler:
         except Exception as e:
             self.setActiveList([])
             print(f"Error reading file or parsing stash data: {str(e)}")
-        #PLACEHOLDER
-        if self.getActiveListItem(0) == self.parseStashes(rawSave)[0]:
-            print("Setting active stash 0 works in init.")
-        else:
-            print("init is fucked.")
-        #CURSED SETTERS THAT BREAK SETTING ACTIVE STASH 0
         self.activeStash = activeStash
-        #self.inactiveStash = inactiveStash
-        #self.rawInactive = self.inactiveStash
-        #self.rawActive = self.activeStash
+        self.inactiveStash = inactiveStash
         if self.getActiveListItem(0) == self.parseStashes(rawSave)[0]:
             print("Declaring their values in init is fine.")
         else:

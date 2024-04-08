@@ -1,9 +1,10 @@
-def main():
-    string = 'this is a string talking about bob, alice, bob, and eve'
-    parts = string.split('bob', 1)
-    string = "tim".join(parts)
-    print(string)
+from SupportingScripts import filehandle
 
+def main():
+    saveManager = filehandle.FileHandler()
+    saveManager.export()
+    saveManager.delete()
+    saveManager.swap()
 
 if __name__ == '__main__':
     main()
