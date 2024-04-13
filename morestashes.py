@@ -4,6 +4,8 @@ from tkinter import ttk
 import ttkbootstrap as ttkb
 from SupportingScripts import filehandle
 import os
+import time
+
 
 def main():
     style = ttkb.Style('darkly')
@@ -35,7 +37,7 @@ def main():
     styleActionsOuter = 'primary'
     styleInactiveOuter = 'primary'
     styleActive = 'info'
-    styleActions = 'success'
+    styleActions = 'info'
     styleInactive = 'info'
 
     #Setup Frames
@@ -50,6 +52,8 @@ def main():
     inactiveStashFrame = ttkb.Frame(inactiveStashFrameOuter, style=styleInactive)
 
     headerLabel = ttkb.Label(headerFrame, text='More Stashes', font=('ariel', 20), anchor='center', bootstyle=f'{styleHeader}, inverse')
+    warningLabel = ttkb.Label(headerFrame, text='WARNING: This product is mostly untested. You are the only one responsible for your data safety. Ensure that any files are backed up from "\\AppData\\LocalLow\\Realm Archive\\Death Must Die\\Saves" before using this program. Further, it is recommended that you use this program while the game is completely shut down. ',
+    font=('ariel', 16), bootstyle = 'danger, inverse')
     activeStashHeader = ttkb.Label(activeStashFrameOuter, text='Active Stash Tabs', font=('ariel', 18), anchor='center', bootstyle=f'{styleActiveOuter}, inverse')
     actionsHeader = ttkb.Label(actionsFrameOuter, text='Actions', font=('ariel', 18), anchor='center', bootstyle=f'{styleActionsOuter}, inverse')
     inactiveStashHeader = ttkb.Label(inactiveStashFrameOuter, text='Inactive Stash Tabs', font=('ariel', 18), anchor='center', bootstyle=f'{styleInactiveOuter}, inverse')
@@ -59,6 +63,8 @@ def main():
     actionsFrameOuter.pack(side='left', fill='both', expand=True, padx='10', pady='5')
     inactiveStashFrameOuter.pack(side='left', fill='both', expand=True, padx='10', pady='5')
     headerLabel.pack(padx=10, pady=10)
+    warningLabel.pack(padx=10, pady = 2, fill='both', expand=True, side='top')
+    warningLabel.config(anchor='center', wraplength=800)
 
     #Active Storage
     activeStashHeader.pack(side='top', fill='x', pady='2')
@@ -109,9 +115,24 @@ def main():
         activeStashButtons[i].pack(side='top', fill='both', expand=True, padx=5, pady=3)
     #Actions
     actionsFrame.pack(side='bottom', fill='both', expand=True, padx='2', pady='5')
-    actionButtonExport = ttkb.Button(actionsFrame, text='<- Export', bootstyle=styleActions, command=saveManager.export)
-    actionButtonSwap = ttkb.Button(actionsFrame, text='<- Swap ->', bootstyle=styleActions, command=saveManager.swap)
-    actionButtonDelete = ttkb.Button(actionsFrame, text='Delete ->', bootstyle='warning', command=saveManager.delete)
+
+    exportIndex = ttkb.IntVar()
+    def exportAndUpdate():
+        exportIndex.set(saveManager.export()) #exports stash and returns index of what place it had to write to
+    actionButtonExport = ttkb.Button(actionsFrame, text='<- Export', bootstyle=styleActions, command=exportAndUpdate)
+
+    swapStatusImport = ttkb.BooleanVar()
+    swapStatusExport = ttkb.BooleanVar()
+    def swapAndUpdate():
+        exported, imported = saveManager.swap()
+        swapStatusImport.set(imported)
+        swapStatusExport.set(exported)
+    actionButtonSwap = ttkb.Button(actionsFrame, text='<- Swap ->', bootstyle=styleActions, command=swapAndUpdate)
+
+    deleteStatus = ttkb.IntVar()
+    def deleteAndUpdate():
+        deleteStatus.set(saveManager.delete())
+    actionButtonDelete = ttkb.Button(actionsFrame, text='Delete ->', bootstyle='warning', command=deleteAndUpdate)
     actionButtons=[actionButtonExport, actionButtonSwap, actionButtonDelete]
     for button in actionButtons:
         button.pack(side='top', fill='both', expand=True, padx=5, pady=5)
@@ -157,6 +178,12 @@ def main():
                 return f'{styleInactive}, outline'
         except:
             return f'{styleInactive}, link'
+        
+    def activeButtonStyling(currentPosition, isTarget=False):
+        if isTarget:
+            return f'{styleActive}'
+        else:
+            return f'{styleActive}, outline'
 
     inactiveStashButtons = []
     for row in range(rowsOfInactive):
@@ -179,31 +206,80 @@ def main():
         ISBFrame.columnconfigure(column, weight=1)
 
 
-    
-    #GUI implemented
-
-    #Functionality begins:
-    
-    #TEST CODE
-
     def updateCurrentActive(value):
         saveManager.activeStash = value
 
     def updateCurrentInactive(value):
         saveManager.inactiveStash = value
     
+    def colorExported(buttonIndex):
+        if buttonIndex == -1:
+            actionButtonExport.config(bootstyle='danger')
+            actionButtonExport.after(500, lambda: actionButtonExport.config(bootstyle=styleActions))
+        elif buttonIndex != saveManager.inactiveStash:
+            inactiveStashButtons[buttonIndex].config(bootstyle='success, outline')
+        else:
+            inactiveStashButtons[buttonIndex].config(bootstyle='success')
+        inactiveStashButtons[buttonIndex].after(3500, lambda: resetColor(buttonIndex))
+    
+    def colorSwapped(active, inactive):
+        activeIndex=active
+        inactiveIndex=inactive
+        if swapStatusImport.get():
+            activeStashButtons[activeIndex].config(bootstyle='success')
+            activeStashButtons[activeIndex].after(700, lambda: activeStashButtons[activeIndex].config(bootstyle=activeButtonStyling(activeIndex, activeIndex == currentActive.get())))
+        else:
+            activeStashButtons[activeIndex].config(bootstyle='danger')
+            activeStashButtons[activeIndex].after(700, lambda: activeStashButtons[active].config(bootstyle=activeButtonStyling(activeIndex, activeIndex == currentActive.get())))
+        if swapStatusExport.get():
+            inactiveStashButtons[inactiveIndex].config(bootstyle='success')
+            inactiveStashButtons[inactiveIndex].after(700, lambda: inactiveStashButtons[inactiveIndex].config(bootstyle=inactiveButtonStyling(inactiveIndex, inactiveIndex == currentInactive.get())))
+        else:
+            inactiveStashButtons[inactiveIndex].config(bootstyle='danger')
+            inactiveStashButtons[inactiveIndex].after(700, lambda: inactiveStashButtons[inactiveIndex].config(bootstyle=inactiveButtonStyling(inactiveIndex, inactiveIndex == currentInactive.get())))
 
+    def colorDeleted(statusInt):
+        if statusInt == 0:
+            actionButtonDelete.config(bootstyle='success')
+            actionButtonDelete.after(500, lambda: actionButtonDelete.config(bootstyle='warning'))
+        elif statusInt == 1:
+            actionButtonDelete.config(bootstyle='danger')
+            actionButtonDelete.after(500, lambda: actionButtonDelete.config(bootstyle='warning'))
+    
+        
+    def resetColor(buttonIndex):
+        if buttonIndex == saveManager.inactiveStash:
+            inactiveStashButtons[buttonIndex].config(bootstyle=inactiveButtonStyling(buttonIndex))
+        else:
+            inactiveStashButtons[buttonIndex].config(bootstyle=inactiveButtonStyling(buttonIndex))
+
+    #Updates filemanagers values based on local version controlled by GUI
     currentInactive.trace_add("write", lambda *args: updateCurrentInactive(currentInactive.get()))
-    currentInactive.trace_add("write", lambda *args: inactiveStashButtons[currentInactive.get()].config(bootstyle=inactiveButtonStyling(currentInactive.get(), isTarget=True)))
-    currentInactive.trace_add("write", lambda *args: inactiveStashButtons[lastInactive.get()].config(bootstyle=inactiveButtonStyling(lastInactive.get())))
     currentActive.trace_add("write", lambda *args: updateCurrentActive(currentActive.get()))
+
+
+    #Recolor inactive button based on which one is exported to
+    exportIndex.trace_add("write", lambda *args: colorExported(exportIndex.get()))
+    #?
+    exportIndex.trace_add("write", lambda *args: inactiveStashButtons[exportIndex.get()].config(bootstyle=inactiveButtonStyling(exportIndex.get(), exportIndex.get() == saveManager.inactiveStash)))
+    #add special style to current active to show it is selected
     currentActive.trace_add("write", lambda *args: activeStashButtons[currentActive.get()].config(bootstyle=rf'{styleActive}'))
+    #Redo style of the last active selected to undo special style indicating it is active
     currentActive.trace_add("write", lambda *args: activeStashButtons[lastActive.get()].config(bootstyle=rf'{styleActive}, outline'))
+    #recolor buttons that are affected by swap with color based on outcome. CURRENTLY BUGGED TO SET THE STYLE TO CURRENT EVEN IF SWAPPED OFF.
+    swapStatusExport.trace_add("write", lambda *args: colorSwapped(currentActive.get(), currentInactive.get()))
+    #update delete button with color based on result of call
+    deleteStatus.trace_add("write", lambda *args: colorDeleted(deleteStatus.get()))
+    #Trace for changing the style of the button clicked on in inactive
+    currentInactive.trace_add("write", lambda *args: inactiveStashButtons[currentInactive.get()].config(bootstyle=inactiveButtonStyling(currentInactive.get(), isTarget=True)))
+    #Trace for changing the style of the button before the current one in inactive list (back to normal after adjusting it to be special for being active)
+    currentInactive.trace_add("write", lambda *args: inactiveStashButtons[lastInactive.get()].config(bootstyle=inactiveButtonStyling(lastInactive.get())))
+    
+    
+    
     #activeStorageStats[0].config(text=currentInactive)
 
     root.mainloop()
-    print(lastActive.get())
-    print(currentActive.get())
 
 if __name__ == '__main__':
     main()

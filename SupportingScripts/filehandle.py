@@ -47,7 +47,7 @@ class FileHandler:
             with open(f'{self.outputPath}\\Stashes\\Stash_{newRawInact+1}', 'r', encoding='utf-8') as file:
                 output = file.read()
         except Exception as e:
-            print(f'Error reading from {newRawInact} while setting inactiveStash: {str(e)}\nDefaulting to empty stash')
+            print(f'Error reading from Stash_{newRawInact+1} while setting inactiveStash: {str(e)}\nDefaulting to empty stash for stash {self.inactiveStash}')
             output = self.EMPTYSTASH
         self._rawInactive = output
     
@@ -89,80 +89,78 @@ class FileHandler:
             return f"Error writing to '{self.outputPath}': {str(e)}"
     
     def swap(self):
-        #this works
-        storage = self.rawInactive
-        if storage == self.rawInactive:
-            print('storage assignment working')
-        else:
-            print('storage assignment not working.')
-        #print(f'Swapping this stash: \n{str(self.rawActive)[:500]}\n\nFor this one:\n{str(self.rawActive)[:500]}')
-        oldactive = self.rawActive
-        if oldactive != self.rawActive:
-            print('storing oldactive broken')
-
-        oldinactive = self.rawInactive
-        if oldinactive != self.rawInactive:
-            print("storing oldinactive broken")
-        #this seems to work
-        wrote = self.exportOverwrite()
-        if wrote == oldactive:
-            print('export of active successful.')
-        else:
-            print('export of active unsuccessful.')
-        self.rawActive = storage
-        if self.rawActive != storage:
-            print('assignment from storage to rawActive broken.')
-        if self.rawActive == storage:
-            print('assignment of rawActive from storage successful')  
-        else:
-            print('assignment of rawActive from storage unsuccessful')
+        try:
+            rawSave = self.readAndDecompress()
+            self.setActiveList(self.parseStashes(rawSave))
+        except Exception as e:
+            self.setActiveList([])
+            print(f"Error reading file or parsing stash data: {str(e)}")
+        exportStatus, importStatus = False, False
+        oldActive = self.rawActive
+        oldInactive = self.rawInactive
+        self.exportOverwrite()
+        self.rawActive = oldInactive
         self.save()
-        if self.rawActive == oldinactive:
-            print('the new active stash has been properly swapped in.')
+        self.inactiveStash = self.inactiveStash #Try to update files to see if it stops corrupt stashes
+        self.activeStash = self.activeStash
+        if oldInactive == self.getActiveListItem(self.activeStash) and oldInactive != self.EMPTYSTASH:
+            print('import true')
+            importStatus = True
+        if oldActive == self.rawInactive and self.rawInactive != self.EMPTYSTASH:
+            print('export true')
+            exportStatus = True
         else:
-            print('the new active stash has not been properly swapped in.')
-            #print('!'*150)
-            #print(f'old:\n{str(oldinactive)[:1500]}'+ '-'*100 + f'\nnew:\n{str(self.rawActive)[:1500]}')
-            #print('!'*150)
-        self.inactiveStash = self.inactiveStash
-        if self.rawInactive == oldactive:
-            print('the new inactive has been successfully swapped into storage.')
-        else:
-            print('the new inactive was not successfully swapped into storage.')
-            #print('!'*150)
-            #print(f'old:\n{str(oldactive)[:1500]}'+ '-'*100 + f'\nnew:\n{str(self.rawInactive)[:1500]}')
-            #print('!'*150)
-    
+            if oldActive != self.rawInactive:
+                print('exported stash does not align with what was previously there.')
+            if self.rawInactive == self.EMPTYSTASH:
+                print('exported stash was empty.')
+        return (exportStatus, importStatus)
 
     """
     writes out to a file to store a stash.
     working right now. 
     """
     def export(self, fileIndex=1):
+        try:
+            rawSave = self.readAndDecompress()
+            self.setActiveList(self.parseStashes(rawSave))
+        except Exception as e:
+            self.setActiveList([])
+            print(f"Error reading file or parsing stash data: {str(e)}")
+
         if self.rawActive != self.EMPTYSTASH:
             stashDirectory = os.path.join(self.outputPath, "Stashes")
             os.makedirs(stashDirectory, exist_ok=True)
-            pathTo = os.path.join(stashDirectory, f'stash_{fileIndex}')
+            pathTo = os.path.join(stashDirectory, f'Stash_{fileIndex}')
             while os.path.exists(pathTo):
                 fileIndex += 1
-                pathTo = os.path.join(stashDirectory, f'stash_{fileIndex}')
-            self.rawActive = self.EMPTYSTASH
-            #print(f'SELF.RAWACTIVE == {self.rawActive}')
-            self.save()
+                pathTo = os.path.join(stashDirectory, f'Stash_{fileIndex}')
             try:
                 with open(pathTo, 'w', encoding='utf-8') as file:
                     file.write(self.rawActive)
+                self.rawActive = self.EMPTYSTASH #Point of failure
+                self.save()
             except Exception as e:
-                print(f'Error reading from {pathTo}: {str(e)}')
+                print(f'Error writing to external file: {str(e)}\nAbandoning export attempt.')
                 raise e
+            self.inactiveStash = self.inactiveStash #Try to update files to see if it stops corrupt stashes
+            return fileIndex-1
         else:
             print("Skipping export because active stash is empty.")
+            return -1
     
 
     """
     Outputs current inactive stash to 
     """
     def exportOverwrite(self):
+        try:
+            rawSave = self.readAndDecompress()
+            self.setActiveList(self.parseStashes(rawSave))
+        except Exception as e:
+            self.setActiveList([])
+            print(f"Error reading file or parsing stash data: {str(e)}")
+
         stashDirectory = os.path.join(self.outputPath, "Stashes")
         os.makedirs(stashDirectory, exist_ok=True)
         pathTo = os.path.join(stashDirectory, f'Stash_{(self.inactiveStash+1)}')
@@ -176,6 +174,7 @@ class FileHandler:
             self.inactiveStash = self.inactiveStash #Updates values held by rawInactive.
             self.rawActive = self.EMPTYSTASH
             self.save()
+            self.inactiveStash = self.inactiveStash #Try to update files to see if it stops corrupt stashes
         else:
             print("Stash being exported is empty. Deleting instead of writing to it.")
             self.delete()
@@ -184,13 +183,16 @@ class FileHandler:
         """Delete External Stash at self.inactive"""
         pathTo = os.path.join(self.outputPath, rf'Stashes\Stash_{self.inactiveStash+1}')
         try:
-            os.remove(pathTo)   
+            os.remove(pathTo)
+            return 0   
         except FileNotFoundError:
             print('file \'Stash_{(self.inactiveStash+1)}, not found')
         except PermissionError:
             print('lack of permission to delete. Please run as admin.')
         except Exception as e:
             print(f'other error: {e}\nwhile trying to delete Stash_{self.inactiveStash+1}')
+        self.inactiveStash = self.inactiveStash
+        return 1
 
     def backup(self):
         backupDirectory = os.path.join(self.outputPath, "Backups")
@@ -275,24 +277,10 @@ class FileHandler:
             print(f"Error reading file or parsing stash data: {str(e)}")
         self.activeStash = activeStash
         self.inactiveStash = inactiveStash
-        if self.getActiveListItem(0) == self.parseStashes(rawSave)[0]:
-            print("Declaring their values in init is fine.")
-        else:
-            print("declaring their values in init is fucked.")
 
 #IMPORTANT: StashJson is in ['serializedSaveData', 'values', '0', '<value>']
 def main():
     print('all good.')
-    saveManager = FileHandler()
-    saveManager.inactiveStash = 1
-    saveManager.delete()
-    '''
-    for i in range(3):
-        print(f'round {i} of swapping.')
-        saveManager.activeStash = i
-        saveManager.inactiveStash = i
-        saveManager.swap()
-    '''
 
 
 if __name__ == "__main__":
