@@ -22,6 +22,8 @@ def parseStash(stash: str) -> dict:
         elif brackets != 0:
             item = item + letter
     outDict = {}
+    outDict['stash'] = {}
+    outDict['stats'] = {}
     #for item in items:
         #print(item)
 
@@ -29,7 +31,6 @@ def parseStash(stash: str) -> dict:
         codeSearch = re.search(r'Code":"([0-9a-zA-Z\-]+)"', item)
         if codeSearch:
             code = codeSearch.group(1)
-            outDict[code] = {'value' : 'test'}
         else:
             code = ''
         
@@ -102,8 +103,26 @@ def parseStash(stash: str) -> dict:
         else:
             bound = ''
 
-        outDict[i] = {'code' : code, 'type' : type, 'rarity' : rarity, 'tier' : tier, 'unique' : unique, 'subtype' : subtype, 'iconvariant' : iconvariant,
+        outDict['stash'][i] = {'code' : code, 'type' : type, 'rarity' : rarity, 'tier' : tier, 'unique' : unique, 'subtype' : subtype, 'iconvariant' : iconvariant,
                       'dropvariant' : dropvariant, 'affixes' : affixes, 'owned' : owned, 'bound' : bound }
+        itemtypeArmor, itemtypeWeapons, itemtypeJewellery, rarityCommon, rarityRare, rarityEpic, rarityMythic = 0,0,0,0,0,0,0
+
+        for key, item in outDict['stash'].items():
+            print(f'{key}: {item}\n\n')
+            #stats for rarity
+            if outDict['stash'][key]['rarity'] == 4:
+                rarityMythic += 1
+            elif outDict['stash'][key]['rarity'] == 3:
+                rarityEpic += 1
+            elif outDict['stash'][key]['rarity'] == 2:
+                rarityRare += 1
+            elif outDict['stash'][key]['rarity'] == 1:
+                rarityCommon += 1
+            
+
+            
+
+
     return outDict
     
 def splitItems(*args):

@@ -6,7 +6,8 @@ import os
 def main():
     saveManager = filehandle.FileHandler()
     bigDict = dataparse.parseStash(saveManager.getActiveListItem(0))
-    #print('my dict: ' + str(bigDict))
+    for key in bigDict:
+        print(bigDict[key])
 
 if __name__ == '__main__':
     main()

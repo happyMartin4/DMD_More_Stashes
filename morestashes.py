@@ -63,8 +63,8 @@ def main():
     actionsFrameOuter.pack(side='left', fill='both', expand=True, padx='10', pady='5')
     inactiveStashFrameOuter.pack(side='left', fill='both', expand=True, padx='10', pady='5')
     headerLabel.pack(padx=10, pady=10)
-    warningLabel.pack(padx=10, pady = 2, fill='both', expand=True, side='top')
-    warningLabel.config(anchor='center', wraplength=800)
+    #warningLabel.pack(padx=10, pady = 2, fill='both', expand=True, side='top')
+    #warningLabel.config(anchor='center', wraplength=800)
 
     #Active Storage
     activeStashHeader.pack(side='top', fill='x', pady='2')
