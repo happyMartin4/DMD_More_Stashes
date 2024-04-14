@@ -4,7 +4,7 @@ from tkinter import ttk
 import ttkbootstrap as ttkb
 from SupportingScripts import filehandle
 import os
-import time
+from SupportingScripts import dataparse
 
 
 def main():
@@ -46,6 +46,8 @@ def main():
     activeStashFrameOuter = ttkb.Frame(root, style=styleActiveOuter)
     actionsFrameOuter = ttkb.Frame(root, style=styleActionsOuter)
     inactiveStashFrameOuter = ttkb.Frame(root, style=f'{styleInactiveOuter}')
+
+    activeStashInfoPane = ttkb.Frame(activeStashFrameOuter, style=f'{styleActiveOuter}')
     
     activeStashFrame = ttkb.Frame(activeStashFrameOuter, style=styleActive)
     actionsFrame = ttkb.Frame(actionsFrameOuter, style=styleActions)
@@ -58,30 +60,33 @@ def main():
     actionsHeader = ttkb.Label(actionsFrameOuter, text='Actions', font=('ariel', 18), anchor='center', bootstyle=f'{styleActionsOuter}, inverse')
     inactiveStashHeader = ttkb.Label(inactiveStashFrameOuter, text='Inactive Stash Tabs', font=('ariel', 18), anchor='center', bootstyle=f'{styleInactiveOuter}, inverse')
 
+
+
     headerFrame.pack(side='top', fill='x', padx='10', pady='5')
     activeStashFrameOuter.pack(side='left', fill='both', expand=True, padx='10', pady='5')
     actionsFrameOuter.pack(side='left', fill='both', expand=True, padx='10', pady='5')
     inactiveStashFrameOuter.pack(side='left', fill='both', expand=True, padx='10', pady='5')
     headerLabel.pack(padx=10, pady=10)
-    #warningLabel.pack(padx=10, pady = 2, fill='both', expand=True, side='top')
-    #warningLabel.config(anchor='center', wraplength=800)
+    warningLabel.pack(padx=10, pady = 2, fill='both', expand=True, side='top')
+    warningLabel.config(anchor='center', wraplength=800)
 
     #Active Storage
     activeStashHeader.pack(side='top', fill='x', pady='2')
     actionsHeader.pack(side='top', fill='x', pady='2')
     inactiveStashHeader.pack(side='top', fill='x', pady='2')
 
-    progressLabel = ttkb.Label(activeStashFrameOuter, bootstyle=f'{styleActiveOuter}, inverse', text='used:', font=('ariel', 10), anchor='center')
+    activeStashInfoPane.pack(side='top', fill='both', expand = True, pady=5)
+    progressLabel = ttkb.Label(activeStashInfoPane, bootstyle=f'{styleActiveOuter}, inverse', text='used:', font=('ariel', 10), anchor='center')
     progressLabel.pack()
 
 
-    activeStorageBar = ttkb.Progressbar(activeStashFrameOuter, bootstyle=f'info, Striped', value=75)
+    activeStorageBar = ttkb.Progressbar(activeStashInfoPane, bootstyle=f'info, Striped', value=75)
     activeStorageBar.pack(fill='x', padx=20, pady=5)
     activeStorageStats = []    
     for i in range(statsToDisplay):
-        activeStorageStats.append(ttkb.Label(activeStashFrameOuter, text=f'stat {i+1}: Placeholder', bootstyle=f'{styleActiveOuter}, inverse', font=('ariel', 8), anchor='center'))
+        activeStorageStats.append(ttkb.Label(activeStashInfoPane, text=f'stat {i+1}: Placeholder', bootstyle=f'{styleActiveOuter}, inverse', font=('ariel', 14), anchor='center'))
         activeStorageStats[i].pack(expand=True, padx=10, pady=5)
-    activeStashFrame.pack(side='bottom', fill='both', expand=False, padx='2', pady='5')
+    activeStashFrame.pack(side='bottom', fill='both', expand=True, padx='2', pady='5')
 
     activeStashCanvas = ttkb.Canvas(activeStashFrame)
     activeStashScrollBar = ttkb.Scrollbar(activeStashFrame, orient='vertical', command=activeStashCanvas.yview)
@@ -90,7 +95,7 @@ def main():
     activeStashCanvas.pack(fill='both', expand=True)
     ASBFrame = ttkb.Frame(activeStashCanvas)
     ASBFrame.pack(fill='both', expand=True)
-    activeStashCanvas.create_window((0,0), window=ASBFrame, anchor='nw', tags='ASBFrame')
+    activeStashCanvas.create_window((0,0), window=ASBFrame, anchor='nw', tags='ASBFrame', height = 80*numberOfActive)
 
     def ASBFconfig(event):
         activeStashCanvas.configure(scrollregion=activeStashCanvas.bbox('all'))
@@ -98,12 +103,16 @@ def main():
         activeStashCanvas.itemconfig('ASBFrame', width=width)
         ASBFrame.config(width=width)
 
+    def onFrameConfig(event):
+        activeStashCanvas.config(scrollregion=activeStashCanvas.bbox('all'))
+    
+    ASBFrame.bind('<Configure>', onFrameConfig)
     activeStashCanvas.bind('<Configure>', ASBFconfig)
 
     def ASBFmousewheel(event):
         activeStashCanvas.yview_scroll(int(-1*(event.delta/120)), 'units')
-    ASBFrame.bind("<Enter>", lambda event: ASBFrame.bind_all('<MouseWheel>', lambda e: ASBFmousewheel(e)))
-    ASBFrame.bind("<Leave>", lambda event: ASBFrame.unbind_all('<MouseWheel>'))
+    activeStashCanvas.bind("<Enter>", lambda event: ASBFrame.bind_all('<MouseWheel>', lambda e: ASBFmousewheel(e)))
+    activeStashCanvas.bind("<Leave>", lambda event: ASBFrame.unbind_all('<MouseWheel>'))
 
 
     activeStashButtons = []
@@ -119,6 +128,8 @@ def main():
     exportIndex = ttkb.IntVar()
     def exportAndUpdate():
         exportIndex.set(saveManager.export()) #exports stash and returns index of what place it had to write to
+        updateActiveStats()
+        updateInactiveStats()
     actionButtonExport = ttkb.Button(actionsFrame, text='<- Export', bootstyle=styleActions, command=exportAndUpdate)
 
     swapStatusImport = ttkb.BooleanVar()
@@ -127,11 +138,14 @@ def main():
         exported, imported = saveManager.swap()
         swapStatusImport.set(imported)
         swapStatusExport.set(exported)
+        updateActiveStats()
+        updateInactiveStats()
     actionButtonSwap = ttkb.Button(actionsFrame, text='<- Swap ->', bootstyle=styleActions, command=swapAndUpdate)
 
     deleteStatus = ttkb.IntVar()
     def deleteAndUpdate():
         deleteStatus.set(saveManager.delete())
+        updateInactiveStats()
     actionButtonDelete = ttkb.Button(actionsFrame, text='Delete ->', bootstyle='warning', command=deleteAndUpdate)
     actionButtons=[actionButtonExport, actionButtonSwap, actionButtonDelete]
     for button in actionButtons:
@@ -208,10 +222,12 @@ def main():
 
     def updateCurrentActive(value):
         saveManager.activeStash = value
-
+        updateActiveStats()
+        
     def updateCurrentInactive(value):
         saveManager.inactiveStash = value
-    
+        updateInactiveStats()
+        
     def colorExported(buttonIndex):
         if buttonIndex == -1:
             actionButtonExport.config(bootstyle='danger')
@@ -253,9 +269,35 @@ def main():
         else:
             inactiveStashButtons[buttonIndex].config(bootstyle=inactiveButtonStyling(buttonIndex))
 
+    def updateActiveStats():
+        statDict = dataparse.parseStash(saveManager.rawActive)
+        activeStorageBar.config(value=(float(statDict['stats']['filled'])/40.0)*100.0)
+        activeStorageStats[0].config(text=f'Items: {statDict['stats']['filled']} of 40')
+        activeStorageStats[1].config(text=f'Mythic: {statDict['stats']['rarityMythic']}')
+        activeStorageStats[2].config(text=f'Epic: {statDict['stats']['rarityEpic']}')
+        activeStorageStats[3].config(text=f'Rare: {statDict['stats']['rarityRare']}')
+        activeStorageStats[4].config(text=f'Common: {statDict['stats']['rarityCommon']}')
+        activeStorageStats[5].config(text=f'weapons: {statDict['stats']['weapons']}')
+        activeStorageStats[6].config(text=f'armor pieces: {statDict['stats']['boots']+statDict['stats']['gloves']+statDict['stats']['torsos']+statDict['stats']['heads']}')
+        activeStorageStats[7].config(text=f'Jewellery: {statDict['stats']['jewels']+statDict['stats']['amulets']+statDict['stats']['waists']+statDict['stats']['rings']}')
+
+
+    def updateInactiveStats():
+        statDict = dataparse.parseStash(saveManager.rawInactive)
+        inactiveStorageBar.config(value=(float(statDict['stats']['filled'])/40.0)*100.0)
+        inactiveStorageStats[0].config(text=f'Items: {statDict['stats']['filled']} of 40')
+        inactiveStorageStats[1].config(text=f'Mythic: {statDict['stats']['rarityMythic']}')
+        inactiveStorageStats[2].config(text=f'Epic: {statDict['stats']['rarityEpic']}')
+        inactiveStorageStats[3].config(text=f'Rare: {statDict['stats']['rarityRare']}')
+        inactiveStorageStats[4].config(text=f'Common: {statDict['stats']['rarityCommon']}')
+        inactiveStorageStats[5].config(text=f'weapons: {statDict['stats']['weapons']}')
+        inactiveStorageStats[6].config(text=f'armor pieces: {statDict['stats']['boots']+statDict['stats']['gloves']+statDict['stats']['torsos']+statDict['stats']['heads']}')
+        inactiveStorageStats[7].config(text=f'Jewellery: {statDict['stats']['jewels']+statDict['stats']['amulets']+statDict['stats']['waists']+statDict['stats']['rings']}')
+
     #Updates filemanagers values based on local version controlled by GUI
     currentInactive.trace_add("write", lambda *args: updateCurrentInactive(currentInactive.get()))
     currentActive.trace_add("write", lambda *args: updateCurrentActive(currentActive.get()))
+
 
 
     #Recolor inactive button based on which one is exported to
@@ -274,10 +316,9 @@ def main():
     currentInactive.trace_add("write", lambda *args: inactiveStashButtons[currentInactive.get()].config(bootstyle=inactiveButtonStyling(currentInactive.get(), isTarget=True)))
     #Trace for changing the style of the button before the current one in inactive list (back to normal after adjusting it to be special for being active)
     currentInactive.trace_add("write", lambda *args: inactiveStashButtons[lastInactive.get()].config(bootstyle=inactiveButtonStyling(lastInactive.get())))
-    
-    
-    
-    #activeStorageStats[0].config(text=currentInactive)
+
+    updateActiveStats()
+    updateInactiveStats()
 
     root.mainloop()
 

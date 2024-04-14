@@ -1,7 +1,28 @@
 import json
 import re
 from . import filehandle
+'''
+stat term to real term:
+bban = banishes (i = i bans)
+hok = % chance to heal on kill (i = i% to heal 1 on kill)
+e = evasion (i = i evasion)
+msp = % less attack movement penalty (i = .9% less?)
+pdr% = increased pickup drop rate (i = 3%)
 
+
+item rarity 1, 2, 3, 4 = common, rare, epic, mythic
+types:
+    8 = relic
+    4 = waist/belt
+    9 = jewel
+    7 = amulet
+    1 = head
+    2 = torso
+    3 = glove
+    5 = boot 
+    0 = weapon
+
+'''
 def parseStash(stash: str) -> dict:
     output = ''
     for letter in stash:
@@ -105,25 +126,71 @@ def parseStash(stash: str) -> dict:
 
         outDict['stash'][i] = {'code' : code, 'type' : type, 'rarity' : rarity, 'tier' : tier, 'unique' : unique, 'subtype' : subtype, 'iconvariant' : iconvariant,
                       'dropvariant' : dropvariant, 'affixes' : affixes, 'owned' : owned, 'bound' : bound }
-        itemtypeArmor, itemtypeWeapons, itemtypeJewellery, rarityCommon, rarityRare, rarityEpic, rarityMythic = 0,0,0,0,0,0,0
+        
+        filled= empty= rarityCommon= rarityRare= rarityEpic= rarityMythic= numWeapon= numHead= numTorso= numGlove= numWaist= numBoot= numRings= numAmulet= numRelic= numJewel= 0
 
         for key, item in outDict['stash'].items():
-            print(f'{key}: {item}\n\n')
+            #print(f'{key}: {item}\n\n')
+            #storage space used
+            if item['code'] == '':
+                empty += 1
+            else:
+                filled += 1
             #stats for rarity
-            if outDict['stash'][key]['rarity'] == 4:
+            if item['rarity'] == '4':
                 rarityMythic += 1
-            elif outDict['stash'][key]['rarity'] == 3:
+            elif item['rarity'] == '3':
                 rarityEpic += 1
-            elif outDict['stash'][key]['rarity'] == 2:
+            elif item['rarity'] == '2':
                 rarityRare += 1
-            elif outDict['stash'][key]['rarity'] == 1:
+            elif item['rarity'] == '1':
                 rarityCommon += 1
+
+
+            #item types:
+            if item['type'] == '0' and item['code'] != '':
+                numWeapon += 1
+            elif item['type'] == '1':
+                numHead += 1
+            elif item['type'] == '2':
+                numTorso += 1
+            elif item['type'] == '3':
+                numGlove += 1
+            elif item['type'] == '4':
+                numWaist += 1
+            elif item['type'] == '5':
+                numBoot += 1
+            elif item['type'] == '6':
+                numRings += 1
+            elif item['type'] == '7':
+                numAmulet += 1
+            elif item['type'] == '8':
+                numRelic += 1
+            elif item['type'] == '9':
+                numJewel += 1
+            #storage space used
+            outDict['stats']['filled'] = filled
+            outDict['stats']['empty'] = empty
+            #rarity of items
+            outDict['stats']['rarityMythic'] = rarityMythic
+            outDict['stats']['rarityEpic'] = rarityEpic
+            outDict['stats']['rarityRare'] = rarityRare
+            outDict['stats']['rarityCommon'] = rarityCommon
+            #item types
+            outDict['stats']['weapons'] = numWeapon
+            outDict['stats']['heads'] = numHead
+            outDict['stats']['torsos'] = numTorso
+            outDict['stats']['gloves'] = numGlove
+            outDict['stats']['waists'] = numWaist
+            outDict['stats']['boots'] = numBoot
+            outDict['stats']['rings'] = numRings
+            outDict['stats']['amulets'] = numAmulet
+            outDict['stats']['relics'] = numRelic
+            outDict['stats']['jewels'] = numJewel
             
-
-            
-
-
+        #print(f'filled: {outDict['stats']['filled']}\nempty: {outDict["stats"]['empty']}\nMythic: {outDict["stats"]['rarityMythic']}\n')
     return outDict
+
     
 def splitItems(*args):
     output=[]
